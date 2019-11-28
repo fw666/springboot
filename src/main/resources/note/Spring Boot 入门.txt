@@ -1,0 +1,151 @@
+﻿应用场景：
+	SpringBoot来简化Spring应用的开发，约定大于配置，去繁从简
+	SpringBoot整合所有Spring技术栈
+	优点：
+		快速创建一个Spring项目及主流框架集成 
+		使用嵌入式的Servlet容器，无需将应用打成war包
+		starters自动依赖和版本控制
+		大量的自动配置，简化开发，也可以修改默认值
+		无需配置xml，无代码生成，开箱即用
+		与云计算天然集成
+	微服务：架构风格
+		martin fowler 提出
+		一个应用应该是一组小型服务，可以通过HTTP的方式进行互通。
+		每一个功能元素最终都是一个可独立替换和独立升级的软件单元。
+		
+SpringBoot ：Hello world！程序
+	创建一个Maven工程
+
+第一步 导入SpringBoot依赖：
+----------------------------------------------------------------------------------------------------------------
+	<parent>
+        		<groupId>org.springframework.boot</groupId>
+        		<artifactId>spring-boot-starter-parent</artifactId>
+       		 <version>2.1.10.RELEASE</version>
+    	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+	</dependencies>
+----------------------------------------------------------------------------------------------------------------
+第二步 编写一个主程序
+----------------------------------------------------------------------------------------------------------------
+package com.fw;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ * @SpringBootApplication 来标注一个主程序类，说明这是一个SpringBoot应用
+ */
+@SpringBootApplication
+public class HelloWorldMainApplication {
+    public static void main(String[] args) {
+        //Spring 应用启动起来
+        SpringApplication.run(HelloWorldMainApplication.class,args);
+    }
+}
+----------------------------------------------------------------------------------------------------------------
+第三步编写相关的控制器Controller.service
+----------------------------------------------------------------------------------------------------------------
+package com.fw.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class HelloController {
+    /**
+     * @ResponseBody 将返回内容输出到页面上
+     */
+    @ResponseBody
+    @RequestMapping("/hello")
+    public String hello(){
+        return "Hello world!";
+    }
+}
+----------------------------------------------------------------------------------------------------------------
+第四步直接运行主程序，然后在浏览器输入 localhost:8080/hello 即可运行程序
+
+----------------------------------------------------------------------------------------------------------------
+    <!-- 这个插件可以将应用打包成一个可执行的 jar 包 -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+----------------------------------------------------------------------------------------------------------------
+将生成的jar包 使用 java -jar springboot-01-helloworld-1.0-SNAPSHOT.jar 命令执行
+在浏览器 输入 localhost:8080/hello 即可执行
+
+HelloWorld探究
+POM文件
+父项目
+----------------------------------------------------------------------------------------------------------------
+<parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.10.RELEASE</version>
+</parent>
+他的父项母
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-dependencies</artifactId>
+    <version>2.1.10.RELEASE</version>
+    <relativePath>../../spring-boot-dependencies</relativePath>
+</parent>
+它来管理spring boot 应用中的所有依赖版本
+以后我们导入依赖是默认不需要写版本（没有在dependencies里面管理的依赖需要声明版本号）
+----------------------------------------------------------------------------------------------------------------
+导入的依赖
+----------------------------------------------------------------------------------------------------------------
+<dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+    </dependencies>
+SpringBoot将所有的功能场景都抽取出来，做成一个个starter启动器
+----------------------------------------------------------------------------------------------------------------
+@SpringBootApplication：标志在某个类上就代表这个类时SpringBoot的主配置类，SpringBoot就应该运行这个类的main方法来启动这个SpringBoot项目
+是由下面的一些注解组合起来的
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@SpringBootConfiguration
+@EnableAutoConfiguration
+@ComponentScan(
+    excludeFilters = {@Filter(
+    type = FilterType.CUSTOM,
+    classes = {TypeExcludeFilter.class}
+), @Filter(
+    type = FilterType.CUSTOM,
+    classes = {AutoConfigurationExcludeFilter.class}
+)}
+)
+public @interface SpringBootApplication {
+
+@SpringBootConfiguration：springBoot的配置类
+	标注在某个类上表示这是一个SpringBoot的配置类
+	@Configuration  配置类 --- 配置文件：配置类也是容器中的一个组件
+
+@EnableAutoConfiguration：开启自动配置功能，我们SpringBoot应用没有配置任何配置文件，但是也可以运行
+			就依赖于这个注解
+	将主配置类（@SpringBootApplication标注的类）的所在包及下面所有子包里面的所有组件扫描到Spring容器中
+	这个东西就是把我们以前需要手动配置的什么视图解析器之类的东西都给我们通过配置类自动配置好了
+----------------------------------------------------------------------------------------------------------------
+使用 Spring Initializer 快速创建SpringBoot项目，需要添加什么模块功能就添加什么功能
+
+@RestController 相当于 @ResponseBody 和 @Controller 的合体，将所有的返回值都打印在浏览器上面，如果是对象，还会将其转换为json数据
+
+默认生产的SpringBoot项目：
+	主程序已经生成好了，我们只需要编写逻辑
+

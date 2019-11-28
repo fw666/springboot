@@ -1,0 +1,28 @@
+﻿配置国际化配置文件
+	三个：
+		login.properties 默认的语言信息
+		login_zh_CN.properties 中文
+		login_en_US.properties 英文
+springboot自动配置好了管理国际化的资源文件组件也就是这个 MessageSourceAutoConfiguration 类
+	这个类已经配置好了你的国际化信息放在 private String basename = "messages"; 这个文件中
+	在 application.properties 中配置
+		spring.messages.basename=i18n.login
+	修改国际化文件配置路径
+
+	然后配合 thymeleaf 中的 #{...}获取国际化信息
+
+点击改变语言信息：
+	国际化 Locale （区域信息对象）；LocaleResolve（获取区域信息对象）
+	默认就是根据请求头带来的区域信息获取Locale进行国际化
+	点击链接进行国际化
+	编写一个自己的 LocaleResolve（获取区域信息对象），如果请求头中没有带 语言国家信息，那么就使用浏览器设置的，
+	如果请求头中带了 语言国家信息，那么就使用 请求头中的
+
+
+	1.创建springboot
+	2.实现简单(不访问数据库)登录
+	3.创建自定义配置类
+	4.配置访问首页
+	5.创建登录拦截器
+	6.实现国际化配置,点击超链接配置语言信息
+	7.thymeleaf引擎语法,yaml语法

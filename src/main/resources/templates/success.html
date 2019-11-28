@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--禁用模板缓存 ctrl + F9 重新编译，就能在编写完html不用重新运行本项目即可显示修改内容-->
+    <h1>成功了</h1>
+    <!--th:text="${hello}" 将 div 中的文本设置为${hello}的内容，可以动态的获取值-->
+    <div th:text="${hello}"></div>
+
+    <hr>
+    <div th:text="${hello}"></div>
+    <div th:utext="${hello}"></div>
+    <hr>
+    <h1 th:text="${user}" th:each="user:${users}"></h1>
+    <hr>
+    <h1>
+        <span th:each="user:${users}">[[${user}]],</span>
+    </h1>
+</body>
+</html>

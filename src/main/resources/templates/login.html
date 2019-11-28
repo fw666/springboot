@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+</head>
+<body>
+    <div>
+        <form action="/myspringboot/user/login" method="post">
+            <table border="1" cellpadding="0" cellspacing="0" style="margin: 0 auto;text-align: center; margin-top: 10%;">
+                <tr>
+                    <td colspan="2"><img th:src="@{image/img.jpg}"/></td>
+                </tr>
+                <tr>
+                    <td colspan="2" th:text="#{login.tip}">
+                        请先登录
+                    </td>
+
+                </tr>
+                <tr th:if="${not #strings.isEmpty(#session.getAttribute('message'))}">
+                    <td colspan="2">
+                        <p style="color: red;" th:text="${#session.getAttribute('message')}">hello</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td th:text="#{login.username}">账号</td>
+                    <td><input type="text" name="username" placeholder="账号" th:placeholder="#{login.username}"></td>
+                </tr>
+                <tr>
+                    <td th:text="#{login.password}">密码</td>
+                    <td><input type="text" placeholder="密码" th:placeholder="#{login.password}" name="password"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><label><input type="checkbox" th:placeholder="#{login.remember}">[[#{login.remember}]]</label></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <button type="submit" th:text="#{login.btn}">登录</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><a th:href="@{/index.html(l='zh_CN')}">中文</a></td>
+                    <td><a th:href="@{/index.html(l='en_US')}">English</a></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>

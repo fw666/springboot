@@ -1,0 +1,138 @@
+YAML 配置文件
+	YAML语法
+	基本语法：
+		k:(空格)v    表示一对键值对
+	如
+	server:
+	  port: 8081
+		以空格的缩进来控制层级关系；只要是左对齐的一列数据都是一个层级的，属性值的大小写也是敏感的
+	值的写法：
+		字面量：普通的值（数字，字符串，布尔）
+			k: v 字面直接写；
+			字符串默认不用添加双引号或单引号；
+			""：双引号；不会转义字符串里面的特殊字符；特殊字符会作为自身想表达的意思
+				name: "zhangsan /n list"    输出： zhangsna 换行 list
+			''：单引号；会转义特殊字符，特殊字符最终是一个普通的字符串数据
+				name: 'zhangsan /n list'    输出： zhangsna /n list
+		对象，map（属性和值）（键值对）
+			k: v
+			当 v 时对象时，v 的写法还是 k: v 的写法,直接在friends 的下一行来写对象的属性和值就行了
+			friends:
+				lastName: zhangsan
+				age: 23
+			行内写法
+			friends: {lastName: zhangsan,age: 19}
+		数组(list set)
+			用 - 值的方式表示数组中的一个元素
+			pets:
+				- cat
+				- dog
+				- pig
+			行内写法：
+			pets: [cat,dog,[pig]
+
+		配置文件注入：
+		/**
+		  * 将配置文件中配置的每一个属性的值映射到这个组件中
+		  * @ConfigurationProperties: 告诉springboot将本类中的所有属性值和配置文件中相关的的配置进行绑定;
+		  *          prefix = "person":配置文件中哪个下面的属性进行一一映射,默认从全局配置文件提取配置
+		  * 只有这个组件是容器中的组件，才能使用容器中提供的@ConfigurationProperties功能
+		  * 所以就将将person 加入spring容器
+		  */
+		@Component
+		@ConfigurationProperties(prefix = "person")
+		public class Person {
+		    private String lastName;
+		    private Integer age;
+		    private Boolean boss;
+		    private Date brith;
+
+		    private Map<String,Object> maps;
+		    private List<Object> lists;
+
+		    private Dog dog;
+----------------------------------------------------------------------------------------------------------
+		yml配置文件：
+		person:
+  		    lastName: zhangsan
+  		    age: 18
+  		    boss: true
+  		    brith: 2019/11/26
+  		    maps: {k1: v,k2: 13}
+  		    lists:
+    		        - lisi
+    		        - jack
+  		    dog:
+    		        name: 雪纳瑞
+    		        age: 12
+		通过 @Autowired 将Perosn 注入，打印 Person 可以发现已经将值注入进去了
+
+	        <!-- 导入配置文件处理器，配置文件进行绑定时就会有提示 -->
+        		<dependency>
+            			<groupId>org.springframework.boot</groupId>
+            			<artifactId>spring-boot-configuration-processor</artifactId>
+            			<optional>true</optional>
+        		</dependency>
+
+	@Value 获取值和 @ConfigurationProperties获取值比较
+----------------------------------------------------------------------------------------------
+	@ConfigurationProperties	                  @Value
+--------------------------------------------------------------------------------------------
+	功能		          批量注入配置文件中的属性	  一个个的指定
+--------------------------------------------------------------------------------------------
+	松散绑定(松散语法)  支持			              不支持
+--------------------------------------------------------------------------------------------
+	SpEl		      不支持			              支持
+--------------------------------------------------------------------------------------------
+	JSR303数据校验	  支持			              不支持
+-------------------------------------------------------------------------------------------
+	复杂类型封装	      支持			              不支持
+--------------------------------------------------------------------------------------------
+
+	@ConfigurationProperties默认从全局配置文件提取配置，但是不能把所有的配置信息都写在全局配置文件中，
+	这样显得很臃肿
+	所以就新建一个专门的配置文件 person.properties
+	@PropertySource(value = {"classpath:person.properties"}) 使用这个注解加载指定的配置文件
+
+
+@Configuration 标注在某个类上，表示这个类是一个配置类，相当于 Spring 以前的 beans.xml 配置文件，不过改成了注解的版本
+
+
+		SpringBoot 的 profile功能：
+			profile时用来做多环境支持的
+			主配置文件为 application.properties
+			在写配置文件的时候可以写 配置文件名后面-{环境支持}.properties(application-{profile}.properties/yml)
+			想要使用其他环境的配置文件就要激活，在 properties 中使用 spring.profiles.active=profile 让SpringBoot使用另外一个配置文件
+		yaml 还可以使用多文档块
+			在 yaml 文件中使用 ‘---’将配置文件分为多个板块
+			分成了多个Doucument
+			如：
+----------------------------------------------------------------------------------------
+server:
+  port: 8081
+spring:
+  profiles:
+    active: prod
+---
+server:
+  port: 9999
+spring:
+  profiles: dev
+---
+server:
+  port: 7777
+spring:
+  profiles: prod # 这个参数表示这块的文档属于 prod
+----------------------------------------------------------------------------------------
+			还可以通过命令行的方式来指定启用的 profile
+			可以修改 启动程序的配置，在 program arguments一栏写入 --spring.profiles.active=dev 来选择启用的配置文件
+			也可以在 com 使用 java -jar springboot-01-helloworld-quick-0.0.1-SNAPSHOT.jar  --spring.profiles.active=dev 选择启用的配置
+			还可以使用虚拟机参数配置，在 VM options 中给写入 -Dspring.profiles.active=dev
+
+		springBoot配置文件的加载位置，加载的优先级顺序依次向下，高优先级的配置会覆盖其他
+			file:./config/	项目的根目录下的config文件夹下
+			file:./		项目的根目录下
+			classpath:/config/	类路径下的config文件夹下
+			classpath:/	类路径下
+		springboot 会从这四个位置加载配置文件；它们是互补配置；
+
